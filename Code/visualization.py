@@ -169,13 +169,13 @@ class RoadVisualizer:
 if __name__ == "__main__":
     road = Road('road_rubber_sticky', rid='road_1')
 
-    # road_nodes = generate_road_nodes()
-    road_nodes = [
-        (0, 30, 0, 8),
-        (20, 30, 0, 8),
-        (40, 30, 0, 8),
-        (60, 30, 0, 8)
-    ]
+    road_nodes = generate_road_nodes()
+    # road_nodes = [
+    #     (0, 30, 0, 8),
+    #     (20, 30, 0, 8),
+    #     (40, 30, 0, 8),
+    #     (60, 30, 0, 8)
+    # ]
     road.nodes.extend(road_nodes)
     road_visualizer = RoadVisualizer()
     road_visualizer.visualize_road(road)
