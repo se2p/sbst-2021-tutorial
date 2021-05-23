@@ -255,37 +255,5 @@ class PlaceVehiclesAndObstacles(unittest.TestCase):
             bng.switch_vehicle(ego_vehicle)
             input('Press enter when done...')
 
-    # def test_place_vehicles_on_steep_road(self):
-    #     """
-    #     Show the effect of clint=True by placing the car on a steep road inside an existing map
-    #     """
-    #     another_scenario = Scenario('Utah', 'test')
-    #     ego = Vehicle('test_car', model='etk800')
-    #     # The target position of the vehicle has been found by "free-roaming" the Utah map and using
-    #     # the world editor
-    #     pos = (814.88, -615.92, 147.55)
-    #     # This value has been randomly
-    #     rot = (0, 0, 1, 1)
-    #     # Add the vehicle and make sure that no matter the valye o f
-    #     another_scenario.add_vehicle(ego, pos=pos, rot=None, rot_quat=rot, cling=True)
-    #
-    #     ego = Vehicle('test_car', model='etk800')
-    #     # The target position of the vehicle has been found by "free-roaming" the Utah map and using
-    #     # the world editor
-    #     pos = (814.88, -615.92, 147.55)
-    #     # This value has been randomly
-    #     rot = (0, 0, 1, 1)
-    #     # Add the vehicle and make sure that no matter the valye o f
-    #     another_scenario.add_vehicle(ego, pos=pos, rot=None, rot_quat=rot, cling=True)
-    #
-    #     with BeamNGpy('localhost', 64256, home=BNG_HOME, user=BNG_USER) as bng:
-    #         another_scenario.make(bng)
-    #         bng.load_scenario(another_scenario)
-    #         bng.start_scenario()
-    #         input('Press enter when done...')
-    #
-    # def load_a_scenario_and_move_furnt
-
-
 if __name__ == '__main__':
     unittest.main()
