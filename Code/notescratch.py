@@ -77,23 +77,23 @@ class PlaceVehiclesAndObstacles(unittest.TestCase):
         # Create a vehicle in front of the ego-car, in same lane, following the same direction
         # We use the current position of the ego-car
         heading_vehicle_position = translate(ego_position, +20.0, 0.0)
-        heading_vehicle = Vehicle('heading', model='etk800', licence='heading', color="yellow")
+        heading_vehicle = Vehicle('heading', model='autobello', licence='heading', color="yellow")
         self.scenario.add_vehicle(heading_vehicle, pos=(heading_vehicle_position.x, heading_vehicle_position.y, ground_level), rot=None, rot_quat=direction_of_the_road)
 
         # Create a vehicle in front of the ego, on the opposite lane, following the opposite direction
         opposite_vehicle_position = translate(ego_position, +10.0, +lane_width)
-        opposite_vehicle = Vehicle('opposite', model='etk800', licence='opposite', color="white")
+        opposite_vehicle = Vehicle('opposite', model='citybus', licence='opposite', color="white")
 
         self.scenario.add_vehicle(opposite_vehicle, pos=(opposite_vehicle_position.x, opposite_vehicle_position.y, ground_level), rot=None, rot_quat=opposite_direction_of_the_road)
 
         with BeamNGpy('localhost', 64256, home=BNG_HOME, user=BNG_USER) as bng:
             self.scenario.make(bng)
-
+            bng.switch_vehicle(ego_vehicle)
             bng.load_scenario(self.scenario)
             bng.start_scenario()
 
             # Focus the main camera on the ego_vehicle
-            bng.switch_vehicle(ego_vehicle)
+            
 
             # Debug information
             coordinates = []

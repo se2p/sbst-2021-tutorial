@@ -2,15 +2,12 @@ import unittest
 import common
 
 from beamngpy import BeamNGpy, Scenario, Road, Vehicle
-from beamngpy.sensors import Timer, Camera
 from beamngpy import ProceduralCone, ProceduralBump, ProceduralCube
 
 from beamngpy import StaticObject
 
 from shapely.geometry import Point, LineString
 from shapely.affinity import translate, rotate
-from math import radians
-from trajectory_generator import generate_trajectory, generate_left_marking, generate_right_marking
 
 # Specify where BeamNG home and user are
 BNG_HOME = "C:\\BeamNG.tech.v0.21.3.0"
@@ -41,14 +38,15 @@ class PlaceVehiclesAndObstacles(unittest.TestCase):
         :return:
         """
         # Setup
+        ground_level = -28.0
 
         # Create a vehicle and put it on the ground, ground is at -28.0 in tig level
         ground_vehicle = Vehicle('ground_vehicle', model='etk800', licence='ground', color="red")
-        self.scenario.add_vehicle(ground_vehicle, pos=(0, 0, -28.0), rot=None, rot_quat=(0, 0, 1, 0))
+        self.scenario.add_vehicle(ground_vehicle, pos=(0, 0, ground_level), rot=None, rot_quat=(0, 0, 1, 0), cling=False)
 
         # Create a vehicle at 0, so 28.0 meters above the tig ground level
         flying_vehicle = Vehicle('flying_vehicle', model='etk800', licence='flying', color="yellow")
-        self.scenario.add_vehicle(flying_vehicle, pos=(0, 10, 0.0), rot=None, rot_quat=(0, 0, 1, 0))
+        self.scenario.add_vehicle(flying_vehicle, pos=(0, 10, 0), rot=None, rot_quat=(0, 0, 1, 0), cling=False)
 
         with BeamNGpy('localhost', 64256, home=BNG_HOME, user=BNG_USER) as bng:
             self.scenario.make(bng)
@@ -77,23 +75,22 @@ class PlaceVehiclesAndObstacles(unittest.TestCase):
         # Create a vehicle in front of the ego-car, in same lane, following the same direction
         # We use the current position of the ego-car
         heading_vehicle_position = translate(ego_position, +20.0, 0.0)
-        heading_vehicle = Vehicle('heading', model='etk800', licence='heading', color="yellow")
+        heading_vehicle = Vehicle('heading', model='autobello', licence='heading', color="yellow")
         self.scenario.add_vehicle(heading_vehicle, pos=(heading_vehicle_position.x, heading_vehicle_position.y, ground_level), rot=None, rot_quat=direction_of_the_road)
 
         # Create a vehicle in front of the ego, on the opposite lane, following the opposite direction
         opposite_vehicle_position = translate(ego_position, +10.0, +lane_width)
-        opposite_vehicle = Vehicle('opposite', model='etk800', licence='opposite', color="white")
+        opposite_vehicle = Vehicle('opposite', model='citybus', licence='opposite', color="white")
 
         self.scenario.add_vehicle(opposite_vehicle, pos=(opposite_vehicle_position.x, opposite_vehicle_position.y, ground_level), rot=None, rot_quat=opposite_direction_of_the_road)
 
         with BeamNGpy('localhost', 64256, home=BNG_HOME, user=BNG_USER) as bng:
             self.scenario.make(bng)
+            # Focus the main camera on the ego_vehicle
+            bng.switch_vehicle(ego_vehicle)
 
             bng.load_scenario(self.scenario)
             bng.start_scenario()
-
-            # Focus the main camera on the ego_vehicle
-            bng.switch_vehicle(ego_vehicle)
 
             # Debug information
             coordinates = []
@@ -205,7 +202,6 @@ class PlaceVehiclesAndObstacles(unittest.TestCase):
             input('Press enter when done...')
 
     def test_place_obstacles(self):
-        # Place procedurally generate cones (like the moose test)
         ground_level = -28.0
 
         # Hardcoded coordinates
@@ -254,6 +250,7 @@ class PlaceVehiclesAndObstacles(unittest.TestCase):
             # Focus the main camera on the ego_vehicle
             bng.switch_vehicle(ego_vehicle)
             input('Press enter when done...')
+
 
 if __name__ == '__main__':
     unittest.main()
