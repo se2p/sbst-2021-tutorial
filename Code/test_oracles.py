@@ -10,6 +10,7 @@ class TargetAreaOracle():
 
     def check(self):
         distance_to_goal = self.targer_position.distance(Point(self.state_sensor.data['pos']))
+        # print("Distance to target", distance_to_goal)
         return distance_to_goal < self.radius
 
 
@@ -19,3 +20,13 @@ class DamagedOracle():
 
     def check(self):
         return len(self.damage_sensor.data['part_damage']) > 0
+
+class OBEOracle():
+    # TODO
+    def __init__(self, road_geometry, state_sensor):
+        self.state_sensor = state_sensor
+        self.road_geometry = road_geometry
+
+    def check(self):
+        # get car position, check if inside the right lane poligon
+        return False
