@@ -215,7 +215,6 @@ def selection(pop, scores, k=3):
             selection_ix = ix
     return pop[selection_ix]
 
-
 # https://machinelearningmastery.com/simple-genetic-algorithm-from-scratch-in-python/
 def main():
     n_pop = 4
