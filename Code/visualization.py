@@ -8,6 +8,7 @@ from math import atan2, pi, degrees
 from scipy.interpolate import splev, splprep
 from numpy.ma import arange
 from beamngpy import Road
+from time import sleep
 
 from shapely.geometry import LineString, Point
 
@@ -70,13 +71,27 @@ class RoadVisualizer:
     little_triangle = Polygon([(10, 0), (0, -5), (0, 5), (10, 0)])
     square = Polygon([(5, 5), (5, -5), (-5, -5), (-5, 5), (5, 5)])
 
-    # def __init__(self):
+    def __init__(self):
         # Make sure there's a windows and does not block anything when calling show
-        # plt.ion()
-        # plt.show()
-        # pass
+        plt.ion()
+        plt.show()
+        self.last_submitted_test_figure = None
 
+    def _setup_figure(self):
+        if self.last_submitted_test_figure is not None:
+            # Make sure we operate on the right figure
+            plt.figure(self.last_submitted_test_figure.number)
+            plt.clf()
+        else:
+            self.last_submitted_test_figure = plt.figure()
+
+        # plt.gcf().set_title("Last Generated Test")
+        plt.gca().set_aspect('equal', 'box')
+        plt.gca().set(xlim=(-30, self.map_size + 30), ylim=(-30, self.map_size + 30))
+        
     def visualize_road(self, road):
+
+        self._setup_figure()
 
         # Adapt the size of the map to the road
         min_x = min([node[0] for node in road.nodes])
@@ -87,7 +102,7 @@ class RoadVisualizer:
         map_size = max((max_x - min_x), (max_y - min_y))
 
         plt.gca().set_aspect('equal', 'box')
-        plt.gca().set(xlim=(-50 + min_x, max_x + 50), ylim=(-50 + min_y, max_y + 50))
+        plt.gca().set(xlim=(-10 + min_x, max_x + 10), ylim=(-10 + min_y, max_y + 10))
 
         # Plot the map. Trying to re-use an artist in more than one Axes which is supported
         # map_patch = patches.Rectangle((0, 0), map_size, map_size,
@@ -155,8 +170,8 @@ class RoadVisualizer:
         #         title_string = title_string + ":" + the_test.validation_message
         #
         # plt.suptitle(title_string, fontsize=14)
-        # plt.draw()
-        # plt.pause(0.001)
+        plt.draw()
+        plt.pause(0.001)
 
 
 
