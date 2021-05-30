@@ -74,8 +74,9 @@ def execute_experiment(individual):
     direction_of_the_road = (0, 0, 1, -1)
 
     # Create the scenario. Each test gets its own scenario
-    scenario = Scenario('tig', "automated_"+str(global_test_count))
+    scenario = Scenario('tig', "automated_test_"+str(global_test_count))
 
+    # Nodes form a straight line, so the road is going to be a straight segment
     road_nodes = [(INTER_NODE_DISTANCE * i, 30, GROUND_LEVEL, 8.0) for i in range(0,10)]
     road = Road('tig_road_rubber_sticky', rid='road')
     road.nodes.extend(road_nodes)
@@ -96,6 +97,7 @@ def execute_experiment(individual):
     ego_vehicle.attach_sensor('state', state_sensor)
 
     # Create a vehicle in front of the ego-car, in same lane, following the same direction
+    # This is the same as before: we have the INITIAL_DISTANCE fixed in this example
     heading_vehicle_position = translate(ego_position, INITIAL_DISTANCE, 0.0)
     heading_vehicle = Vehicle('heading', model='etk800', licence='heading', color="yellow")
     scenario.add_vehicle(heading_vehicle,
@@ -121,6 +123,10 @@ def execute_experiment(individual):
     rgba_colors.append([1.0, 0.0, 0.0, 0.3])
     target_area_reached_oracle = TargetAreaOracle(target_position, radius, state_sensor)
 
+    # Configure the ego-car destination. The end of the road
+    destination = road_nodes[-1]
+    scenario.add_checkpoints([destination], [(1.0, 1.0, 1.0)], ids=["goal_wp"])
+
     print("Connecting to simulator")
     # Connect to the running BeamNG
     bng = BeamNGpy('localhost', 64256, home=BNG_HOME, user=BNG_USER)
@@ -128,7 +134,8 @@ def execute_experiment(individual):
         bng.open(launch=False, deploy=False)
         scenario.make(bng)
 
-        # Enable Debugging
+        # Enable Debugging. Now we visualize small spheres that identify the trajectory
+        # of the heading car
         bng.add_debug_spheres(coordinates, radii, rgba_colors)
 
         # Configure simulation
@@ -141,21 +148,21 @@ def execute_experiment(individual):
         bng.pause()
 
         # Focus the main camera on the ego_vehicle
-        bng.switch_vehicle(ego_vehicle)
+        # bng.switch_vehicle(ego_vehicle)
+        # We also focus the main camera on the heading_vehicle to see how
+        # the "drunk" driver drives
+        bng.switch_vehicle(heading_vehicle)
 
         # Configure the movement of the NPC vehicle
         heading_vehicle.ai_set_mode('disabled')
         heading_vehicle.ai_set_script(individual)
 
-        # Configure the ego-car destination
-        destination = road_nodes[-1]
-        scenario.add_checkpoints([destination], [(1.0, 1.0, 1.0)], ids=["goal_wp"])
-
+        # Configure the test subject
         ego_vehicle.ai_drive_in_lane(True)
         ego_vehicle.ai_set_speed(SPEED_LIMIT_KMH / 3.6, mode='limit')
         ego_vehicle.ai_set_waypoint("goal_wp")
 
-        # Temporarily store runtime data
+        # Temporarily store runtime data to compute the fitness function
         distances = []
 
         # Execute the simulation for one second, check the oracles and resume, until either the oracles or the timeout
@@ -163,11 +170,12 @@ def execute_experiment(individual):
         for i in range(1, TIMEOUT):
             bng.step(60)
 
-            # Poll data
+            # Poll data (for both vehicles!)
             ego_vehicle.poll_sensors()
             heading_vehicle.poll_sensors()
 
-            # Compute our "fitness" function
+            # Compute our "fitness" function. We want to minimize the distance
+            # between the two cars
             distance = Point(state_sensor.data['pos']).distance( Point(heading_vehicle_state_sensor.data['pos']))
             distances.append(distance)
 
@@ -203,11 +211,15 @@ def mutate(individual):
             node['y'] = node['y'] + delta
             print("Mutating node", index, "position by", delta)
             # Hardcoded to avoid going too much out the lane
+            # Basically we cap the mutation
             if node['y'] > 34.0: # opposite lane
                 node['y'] = 34.0
             if node['y'] < 24.0: # out of the road
                 node['y'] = 24.0
 
+    # We control the speed of the heading vehicle by changing the inter-time
+    # between nodes. Again, we need to cap the mutation to avoid the heading car
+    # to move back using the rear gear.
     cumulative_delta = 0.0
     for index, node in enumerate(mutant):
         if random.random() <= 1 / len(node):
@@ -248,6 +260,8 @@ def main():
     # - Ca 29 km/h constant speed with 2.5
     best_individual = []
 
+    # Create the initial default trajectory. It is a straight line, nodes are equidistant
+    # and speed is more or less constant (time between node is the same)
     for i in range(0, 5):
         node = {
             'x': INTER_NODE_DISTANCE * i + INITIAL_DISTANCE,
@@ -265,12 +279,14 @@ def main():
         new_individual = mutate(best_individual)
         # Compute fitness
         distance = execute_experiment(new_individual)
-        # Check for improvement
+        # Check for improvement. If the new individual is better we keep it, otherwise
+        # we keep the old individual
         if distance < best_distance:
             best_distance = distance
             best_individual = new_individual
             print("Improved fitness to", best_distance)
 
+        # If we make the cars crash, there's nothing more to search. So we can exit
         if distance < 0.0:
             print("Goal reached. Stop the search")
             break
@@ -279,5 +295,6 @@ def main():
 
 if __name__ == "__main__":
     # This is the "main" Bng Client that starts and stop the simulator
+    # All the tests will share the same instance of the simulator
     with BeamNGpy('localhost', 64256, home=BNG_HOME, user=BNG_USER) as bng:
         main()

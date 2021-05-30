@@ -25,12 +25,17 @@ class NvidiaPrediction:
             image = preprocess(image)
             image = np.array([image])
 
+            # Call the keras model for the prediction
             steering_angle = float(self.model.predict(image, batch_size=1))
+
 
             if speed_kmh > self.speed_limit:
                 self.speed_limit = self.MIN_SPEED  # slow down
             else:
                 self.speed_limit = self.MAX_SPEED
+
+            # Based on the predicted steering angle the controller sets the speed:
+            # for sharper turns will slow down more than for straight segments
             throttle = 1.0 - steering_angle ** 2 - (speed_kmh / self.speed_limit) ** 2
             return steering_angle, throttle
 
@@ -84,8 +89,10 @@ def drive(queue, vehicle_id, model_file):
     frame_id = 0
 
     # We can notify the test case that we are ready
+    # This will resume the execution of the runtime monitors in the main process
     queue.put('READY')
 
+    # This is the model that makes the steering angle predictions and compute the throttle
     predict = NvidiaPrediction(model_file, 30.0)
 
     while True:
@@ -109,4 +116,5 @@ def drive(queue, vehicle_id, model_file):
 
         steering_angle, throttle = predict.predict(image, speed_kmh)
         print("Controlling car with: Steering: ", steering_angle, "; Throttle: ", throttle)
+        # Send the control commands to the ego-car
         vehicle.control(throttle=throttle, steering=steering_angle, brake=0)

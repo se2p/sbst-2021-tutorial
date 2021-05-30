@@ -2,7 +2,7 @@ import unittest
 from beamngpy import BeamNGpy, Scenario, Road, Vehicle
 from beamngpy.sensors import State, Damage, Camera, Timer
 from trajectory_generator import generate_trajectory
-from test_oracles import TargetAreaOracle, OBEOracle
+from test_oracles import TargetAreaOracle
 
 from shapely.geometry import Point, LineString, Polygon
 from shapely.affinity import translate, rotate
@@ -131,11 +131,15 @@ class InternalDrivingAI(unittest.TestCase):
                     print("Car reached target location. Exit")
                     return
 
-class ExternalDrivingAI(unittest.TestCase):
 
+class ExternalDrivingAI(unittest.TestCase):
+    # We drive the car using NVidia Dave2 - Credits to Precrime @ USI - Lugano
+    # The driving agent runs in a separate process (we use the multiprocessing package)
     def test_driver_control_separate_process(self):
 
         # TODO This requires python 3.7 otherwise NVidia Driver will not work!
+        # We use the Driving Agent from the DeepJanus project and that relies on a version
+        # of tensorflow that is not available after Python 3.7
 
         direction_of_the_road, road_nodes = generate_road()
         # This is the node at the beginning
@@ -184,19 +188,23 @@ class ExternalDrivingAI(unittest.TestCase):
 
             # Start the driver Using another venv
             print("Starting driver")
+            # This is the h5 model that contains the trained weights for the AI
             model_file = ".\\self-driving-car-178-2020.h5"
+            # Allows IPC and sync
             queue = Queue()
-            driver_process = Process(target=drive_with_nvidia, args=(queue, 'ego', model_file, ))
+
+            driver_process = Process(target=drive_with_nvidia,
+                                     # ego is the id of the vehicle
+                                     args=(queue, 'ego', model_file, ))
+            # Start in background
             driver_process.start()
 
             # Wait until the client started, max 30 sec
             print("Waiting for the driver to start...")
-            queue.get()
+            queue.get(timeout=30)
             print("Ready...")
             # sleep(10)
 
-            # road_geometry = bng.get_road_edges('the_road')
-            # obe_oracle = OBEOracle(road_geometry, state_sensor)
             try:
                 while True:
                     print("> Polling sensors")
@@ -208,10 +216,6 @@ class ExternalDrivingAI(unittest.TestCase):
                     if target_position_reached.check():
                         print("Car reached target location. Exit")
                         return
-
-                    # if obe_oracle.check():
-                    #     print("Car drove off lane")
-                    #     self.fail("Car is out of the lane!")
 
                     # Ensure monitoring is faster than driver
                     sleep(1)

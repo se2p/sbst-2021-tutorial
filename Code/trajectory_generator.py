@@ -18,7 +18,8 @@ def generate_trajectory(initial_location, initial_rotation, driving_actions, SAM
         len_coor = []
 
         for s in segments:
-            # Generate the segment
+            # Generate the segment from the initial position and rotation
+            # Then update the initial position and rotation for the next segment
             segment = None
             if s["type"] == 'straight':
                 # Create an horizontal line of given length from the origin

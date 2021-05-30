@@ -62,11 +62,13 @@ def generate_random_road_segment():
                     [{'type': 'straight', 'length': randint(MIN_LENGTH, MAX_LENGTH)}]
                 }
     elif rand() <= 0.5:
+        # This creates left turn segments
         return {'trajectory_segments':
                     [{'type': 'turn', 'angle': - randint(MIN_ANGLE, MAX_ANGLE),
                       'radius': randint(MIN_RADIUS, MAX_RADIUS)}]
                 }
     else:
+        # This creates right turn segments
         return {'trajectory_segments':
                     [{'type': 'turn', 'angle': + randint(MIN_ANGLE, MAX_ANGLE),
                       'radius': randint(MIN_RADIUS, MAX_RADIUS)}]
@@ -81,6 +83,8 @@ def change_attribute_mutation(road_segment):
     if road_segment['trajectory_segments'][0]['type'] == 'straight':
         road_segment['trajectory_segments'][0]['length'] = randint(MIN_LENGTH, MAX_LENGTH)
     elif rand() <= 0.5:
+        # This is debatable: if we flip the sign, we are turning in the opposite direction
+        # shall this be considered the same/similar segment or a different one?
         sign = 1.0 if (rand() <= 0.5) else -1.0
         road_segment['trajectory_segments'][0]['angle'] = randint(MIN_ANGLE, MAX_ANGLE) * sign
     else:
@@ -88,7 +92,7 @@ def change_attribute_mutation(road_segment):
 
 
 def mutate(individual):
-    # Clone the individual
+    # Clone the individual and mutate its segments
     mutant = [dict(road_segment) for road_segment in individual]
 
     # Pick the road_segments to mutate
@@ -111,7 +115,9 @@ def execute_experiment(individual, road_visualizer=None):
     # Create the scenario. Each test gets its own scenario
     scenario = Scenario('tig', "pcg_test_" + str(global_test_count))
 
+    # We make a simplifying assumption that
     # All the roads start from the same place with the same initial straight segment
+    # This lets us "hardcode" the initial position of the vehicle
     wrapped_individual = [{'trajectory_segments':
                                [{'type': 'straight', 'length': 10}]
                            }]
@@ -161,6 +167,8 @@ def execute_experiment(individual, road_visualizer=None):
         # Focus the main camera on the ego_vehicle
         bng.switch_vehicle(ego_vehicle)
 
+        # We need to query the exact geometry of the road to check if the car is driving
+        # inside the lane or not
         road_edges = bng.get_road_edges('the_road')
         road_nodes = [(edges['middle'][0], edges['middle'][1], GROUND_LEVEL, 2 * LANE_WIDTH) for edges in road_edges]
 
@@ -172,11 +180,12 @@ def execute_experiment(individual, road_visualizer=None):
         simple_obe_monitor = SimpleOBEOracle(road_nodes, state_sensor)
 
         ego_vehicle.ai_drive_in_lane(True)
-        ego_vehicle.ai_set_speed(SPEED_LIMIT_KMH / 3.6, mode='limit')
+        ego_vehicle.ai_set_speed(SPEED_LIMIT_KMH / 3.6, mode='set')
         ego_vehicle.ai_set_waypoint("goal_wp")
+        ego_vehicle.ai_set_aggression(2.0)
 
-        # Execute the simulation for one second, check the oracles and resume, until either the oracles or the timeout
-        # trigger
+        # Execute the simulation for one second, check the oracles and resume,
+        # until either the oracles or the timeout triggers
         distances = []
 
         for i in range(1, TIMEOUT):
@@ -185,6 +194,8 @@ def execute_experiment(individual, road_visualizer=None):
             # Poll data
             ego_vehicle.poll_sensors()
 
+            # Compute the "Fitness" Function that we want to maximize: distance from the
+            # the center of the lane
             distance = right_lane_center_polyline.distance(Point(state_sensor.data['pos']))
             distances.append(distance)
             # print("Distance to center of right lane", distance)
@@ -215,26 +226,27 @@ def selection(pop, scores, k=3):
             selection_ix = ix
     return pop[selection_ix]
 
+
 # https://machinelearningmastery.com/simple-genetic-algorithm-from-scratch-in-python/
 def main():
     n_pop = 4
     n_iter = 10
 
-    # initial population of random bitstring
-    pop = [generate_random_road(5) for _ in range(n_pop)]
+    # initial population of random roads made of N segments N=10
+    pop = [generate_random_road(10) for _ in range(n_pop)]
 
-    print("Population size", len(pop))
     # keep track of best solution
     best, best_eval = None, 0
 
-    # enumerate generations
     for gen in range(n_iter):
-        # evaluate all candidates in the population
+        # TODO: Note that we do NOT validate the inputs here!
+
+        # Evaluate all candidates in the population
         executions = [execute_experiment(c) for c in pop]
 
         print("Results from the executions:")
         [ print(execution) for execution in executions ]
-        # If we found a problem or there was an error the search is over
+
         test_outcome = [e[0] for e in executions]
         scores = [e[1] for e in executions]
 
@@ -244,7 +256,7 @@ def main():
                 best, best_eval = pop[i], scores[i]
                 print("Generation: %d. New best score = %.3f" % (gen, scores[i]))
 
-        # stop the search if we got what we wanted
+        # If we found a problem or there was an error the search is over
         if "Fail" in test_outcome:
             print("Failed test. Search is over")
             return [best, best_eval]
@@ -253,7 +265,7 @@ def main():
             print("Error test. Search is over")
             return [best, best_eval]
 
-        # select parents
+        # select individuals using tournament selection (k=3)
         selected = [selection(pop, scores) for _ in range(n_pop)]
 
         # create the next generation

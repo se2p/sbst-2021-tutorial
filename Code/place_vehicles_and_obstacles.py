@@ -86,11 +86,12 @@ class PlaceVehiclesAndObstacles(unittest.TestCase):
 
         with BeamNGpy('localhost', 64256, home=BNG_HOME, user=BNG_USER) as bng:
             self.scenario.make(bng)
-            # Focus the main camera on the ego_vehicle
-            bng.switch_vehicle(ego_vehicle)
 
             bng.load_scenario(self.scenario)
             bng.start_scenario()
+
+            # Focus the main camera on the ego_vehicle
+            bng.switch_vehicle(ego_vehicle)
 
             # Debug information
             coordinates = []
