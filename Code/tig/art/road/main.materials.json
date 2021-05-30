@@ -1,0 +1,183 @@
+{
+  "road_rubber_sticky": {
+    "name": "road_rubber_sticky",
+    "mapTo": "unmapped_mat",
+    "class": "Material",
+    "persistentId": "d9747497-05d7-4388-af1e-14893535b79b",
+    "Stages": [
+      {
+        "colorMap": "levels/west_coast_usa/art/road/road_asphalt_2lane_d.dds",
+        "normalMap": "levels/west_coast_usa/art/road/road_asphalt_2lane_n.dds",
+        "reflectivityMap": "levels/west_coast_usa/art/road/road_rubber_sticky_d.dds",
+        "specularMap": "levels/west_coast_usa/art/road/road_asphalt_2lane_s.dds",
+        "specularPower": 1,
+        "useAnisotropic": true
+      },
+      {},
+      {},
+      {}
+    ],
+    "alphaRef": 255,
+    "castShadows": false,
+    "cubemap": "global_cubemap_metalblurred",
+    "materialTag0": "RoadAndPath",
+    "materialTag1": "beamng",
+    "specularStrength0": "0",
+    "translucent": true,
+    "translucentZWrite": true
+  },
+  "line_yellow": {
+    "name": "line_yellow",
+    "mapTo": "unmapped_mat",
+    "class": "Material",
+    "persistentId": "53fcb339-31d3-4f54-b1fe-31820ad524f5",
+    "Stages": [
+      {
+        "colorMap": "levels/west_coast_usa/art/road/line_yellow_d.dds",
+        "normalMap": "levels/west_coast_usa/art/road/line_white_n.dds",
+        "specularPower": 1,
+        "useAnisotropic": true
+      },
+      {},
+      {},
+      {}
+    ],
+    "alphaRef": 255,
+    "annotation": "SOLID_LINE",
+    "castShadows": false,
+    "materialTag0": "RoadAndPath",
+    "materialTag1": "beamng",
+    "specularStrength0": "0",
+    "translucent": true,
+    "translucentZWrite": true
+  },
+  "line_yellowblack": {
+    "name": "line_yellowblack",
+    "mapTo": "unmapped_mat",
+    "class": "Material",
+    "persistentId": "7e8c9268-cd00-4403-a0c1-55d039d3a56c",
+    "Stages": [
+      {
+        "colorMap": "levels/west_coast_usa/art/road/line_yellowblack_d.dds",
+        "specularMap": "levels/west_coast_usa/art/road/line_yellowblack_s.dds",
+        "specularPower": 1,
+        "useAnisotropic": true
+      },
+      {},
+      {},
+      {}
+    ],
+    "alphaRef": 255,
+    "annotation": "SOLID_LINE",
+    "castShadows": false,
+    "materialTag0": "RoadAndPath",
+    "materialTag1": "beamng",
+    "specularStrength0": "0",
+    "translucent": true,
+    "translucentZWrite": true
+  },
+  "line_white": {
+    "name": "line_white",
+    "mapTo": "unmapped_mat",
+    "class": "Material",
+    "persistentId": "e5e9ee8b-c4d6-4064-b2ee-1e397e577528",
+    "Stages": [
+      {
+        "colorMap": "levels/west_coast_usa/art/road/line_white_d.dds",
+        "normalMap": "levels/west_coast_usa/art/road/line_white_n.dds",
+        "specularPower": 1,
+        "useAnisotropic": true
+      },
+      {},
+      {},
+      {}
+    ],
+    "alphaRef": 255,
+    "annotation": "SOLID_LINE",
+    "castShadows": false,
+    "materialTag0": "RoadAndPath",
+    "materialTag1": "beamng",
+    "materialTag2": "driver_training",
+    "specularColor0": "1 1 1 1",
+    "specularStrength0": "0",
+    "translucent": true,
+    "translucentZWrite": true
+  },
+  "brickwall1" : {
+    "name" : "brickwall1",
+    "mapTo" : "brickwall1",
+    "class" : "Material",
+    "persistentId" : "6c18b653-c905-4b79-b585-30ef1fe21fcb",
+    "Stages" : [
+      {
+        "colorMap" : "levels/garage/art/shapes/structure/brickwall1_d.dds",
+        "normalMap" : "levels/garage/art/shapes/structure/brickwall_n.dds",
+        "pixelSpecular" : true,
+        "specularMap" : "levels/garage/art/shapes/structure/brickwall_s.dds",
+        "specularPower" : 32,
+        "useAnisotropic" : true
+      },
+      {},
+      {},
+      {}
+    ],
+    "alphaRef" : 0,
+    "materialTag0" : "beamng",
+    "materialTag1" : "vehicle",
+    "translucent" : true,
+    "translucentBlendOp" : "None"
+  },
+  "bumber" : {
+    "name" : "bumber",
+    "mapTo" : "unmapped_mat",
+    "class" : "Material",
+    "persistentId" : "4bade9b9-06cf-41ce-8eca-d1a6d7554456",
+    "Stages" : [
+      {
+        "colorMap" : "levels/driver_training/art/road/drain2_d.dds",
+        "normalMap" : "levels/driver_training/art/road/drain2_n.dds",
+        "specular" : [ 0.9960780143737793, 0.9960780143737793, 0.9960780143737793, 1 ],
+        "specularMap" : "levels/driver_training/art/road/drain2_s.dds",
+        "specularPower" : 1,
+        "useAnisotropic" : true
+      },
+      {},
+      {},
+      {}
+    ],
+    "castShadows" : false,
+    "materialTag0" : "beamng",
+    "materialTag1" : "RoadAndPath",
+    "specularStrength0" : "0.882353",
+    "translucent" : true,
+    "translucentZWrite" : true
+  },
+  "rumblestrip" : {
+    "name" : "rumblestrip",
+    "mapTo" : "rumblestrip",
+    "class" : "Material",
+    "persistentId" : "e17953f5-131d-435f-8b15-04ad11605520",
+    "Stages" : [
+      {
+        "colorMap" : "levels/hirochi_raceway/art/shapes/roads/rumblestrip_d.dds",
+        "normalMap" : "levels/hirochi_raceway/art/shapes/roads/rumblestrip_n.dds",
+        "overlayMap" : "levels/hirochi_raceway/art/shapes/roads/rumblestrip_rubber.dds",
+        "pixelSpecular" : true,
+        "specularMap" : "levels/hirochi_raceway/art/shapes/roads/rumblestrip_s.dds",
+        "specularPower" : 32,
+        "useAnisotropic" : true
+      },
+      {
+        "useAnisotropic" : true
+      },
+      {},
+      {}
+    ],
+    "annotation" : "BUILDINGS",
+    "groundType" : "RUMBLE_STRIP",
+    "materialTag0" : "beamng",
+    "materialTag1" : "building",
+    "specularStrength0" : "1.37255",
+    "translucentBlendOp" : "None"
+  },
+}

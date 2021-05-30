@@ -1,0 +1,11 @@
+{
+  "warning_material-1c6cac77-c0ed-475b-af33-ff59d246e049": {
+    "internalName": "warning_material",
+    "class": "TerrainMaterial",
+    "persistentId": "1c6cac77-c0ed-475b-af33-ff59d246e049",
+    "detailMap": "core/art/warnmat",
+    "diffuseMap": "core/art/warnmat",
+    "macroMap": "core/art/warnmat",
+    "order_simset": 293933444
+  }
+}
