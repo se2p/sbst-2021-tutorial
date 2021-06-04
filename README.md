@@ -2,9 +2,9 @@
 
 This repository contains the material for the [Tutorial](https://sbst21.github.io/keynotes/) on Simulation-Based Testing of Self-Driving Car Software using BeamNG.tech that Alessio Gambi presented at the [14th International Workshop on Search-Based Software Testing](https://sbst21.github.io/) on May the 31st, 2021.
 
-The (short) version of the  tutorial video is available [here](https://unipassaude-my.sharepoint.com/:v:/g/personal/alessio_gambi_uni-passau_de/EUJKZRhE_HhHqSIrPODtAa8BfFnYnrKv_gt3-qKWF3bqEQ?e=QWuHFM). In this short version, Alessio Gambi presents only a subset of the slides posted in this repository.
+The "short" version of the tutorial video (ca 00:45:00) is available on youtube [here](https://youtu.be/_IjEaAk52-8). In this short version, Alessio Gambi presents only a subset of the slides posted in this repository.
 
-The extended version of the tutorial, covering all the material, is available on youtube [here](https://www.youtube.com/watch?v=F-CTMMNE0JU).
+The "extended" version of the tutorial (ca 1:45:00) covers all the material and is also available on youtube [here](https://www.youtube.com/watch?v=F-CTMMNE0JU).
 
 The aim of this tutorial is to provide everybody with the basics notion on simulation-based testing and how to implement them using the photo-realistic, accurate, physical simulator [BeamNG.tech](https://beamng.gmbh/research/), and how to generate tests automatically.
 
