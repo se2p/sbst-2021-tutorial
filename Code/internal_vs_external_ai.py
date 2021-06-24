@@ -164,7 +164,7 @@ class ExternalDrivingAI(unittest.TestCase):
 
         # Monitoring
         state_sensor = State()
-        ego_vehicle.attach_sensor('state', state_sensor)
+        ego_vehicle.attach_sensor('state2', state_sensor)
         # We place the target position for the test case just before the end of the road
         target_position = (road_nodes[-3][0], road_nodes[-3][1], road_nodes[-3][2])
         radius = 2 * LANE_WIDTH + 0.2

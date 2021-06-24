@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from math import sqrt
 from beamngpy import BeamNGpy
 from beamngpy.sensors import Camera, State
+import tensorflow as tf
 
 # Specify where BeamNG home and user are
 BNG_HOME = "C:\\BeamNG.tech.v0.21.3.0"
@@ -21,13 +22,21 @@ class NvidiaPrediction:
 
     def predict(self, image, speed_kmh):
         try:
+            print("Got image", image)
+
             image = np.asarray(image)
+            print("as NP Array", image)
             image = preprocess(image)
+            print(" After preprocessing: ", image)
+
+            image = tf.cast(image, tf.float32)
             image = np.array([image])
 
+            print("Making predictions:")
             # Call the keras model for the prediction
             steering_angle = float(self.model.predict(image, batch_size=1))
 
+            print("predicted steering", steering_angle)
 
             if speed_kmh > self.speed_limit:
                 self.speed_limit = self.MIN_SPEED  # slow down
@@ -49,11 +58,11 @@ def drive(queue, vehicle_id, model_file):
     def compute_speed(vel_mps):
         return sqrt(sum([v**2 for v in vel_mps])) * 3.6
 
-    print("Staring driver process")
+    print(">> Staring driver process")
     bng = BeamNGpy('localhost', 64256, home=BNG_HOME, user=BNG_USER)
     bng = bng.open(launch=False, deploy=False)
 
-    print("Configuring simulation steps")
+    print(">> Configuring simulation steps")
     bng.set_steps_per_second(60)
     bng.set_deterministic()
 
@@ -61,7 +70,7 @@ def drive(queue, vehicle_id, model_file):
     vehicle = active_vehicles[vehicle_id]
     # Get current position and velocity via State
     state = State()
-    vehicle.attach_sensor('state', state)
+    vehicle.attach_sensor('state2', state)
     # Show image
     # Create a vehicle with a camera sensor attached to it
     # Set up sensors
@@ -101,7 +110,11 @@ def drive(queue, vehicle_id, model_file):
         frame_id += 1
         plt.title("Frame: " + str(frame_id), fontsize=10)
         # Poll
+        print(">> Polling Sensors from CAR")
         vehicle.poll_sensors()
+        print(">> Polled Sensors from CAR. State:", state)
+        print(">> Polled Sensors from CAR. Camera:", camera)
+
         # Show camera
         if image is None:
             image = camera.data['colour']
